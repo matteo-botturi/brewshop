@@ -1,6 +1,6 @@
-package fr.mb.repositories;
+package fr.mb.brewshop.repositories;
 
-import fr.mb.entities.CouleurEntity;
+import fr.mb.brewshop.entities.CouleurEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.RequestScoped;
 

@@ -1,11 +1,11 @@
-package fr.mb.dto;
+package fr.mb.brewshop.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.mb.entities.CouleurEntity;
+import fr.mb.brewshop.entities.CouleurEntity;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -21,10 +21,7 @@ public class CouleurDTO {
         nom = couleurEntity.getNom();
     }
 
-    public static List<CouleurDTO> toDTOList(List<CouleurEntity> couleurEntities){
-        List<CouleurDTO> couleurDTOList = new ArrayList<>();
-        for (CouleurEntity couleurEntity : couleurEntities)
-            couleurDTOList.add(new CouleurDTO(couleurEntity));
-        return couleurDTOList;
+    public static List<CouleurDTO> toDTOList(List<CouleurEntity> couleurEntities) {
+        return couleurEntities.stream().map(CouleurDTO::new).collect(Collectors.toList());
     }
 }
