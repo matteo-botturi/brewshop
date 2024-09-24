@@ -1,24 +1,26 @@
 package fr.mb.brewshop.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 import java.util.Objects;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Getter
 @Setter
 @Entity
-@Table(name = "CONTINENT", schema = "dbo", catalog = "brewshop")
+@Table(name = "CONTINENT")
 public class ContinentEntity {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "ID_CONTINENT")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID_CONTINENT", unique = true, nullable = false)
     private Integer id;
 
-    @Basic
-    @Column(name = "NOM_CONTINENT")
-    private String nom;
+    @Column(name = "NOM_CONTINENT", unique = true, nullable = false, length = 25)
+    private String nomContinent;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "continent")
     private List<CountryEntity> countries;

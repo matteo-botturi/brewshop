@@ -3,12 +3,14 @@ package fr.mb.brewshop.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.mb.brewshop.entities.CouleurEntity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class CouleurDTO {
     @JsonProperty(index = 1)
     private Integer id;
@@ -18,7 +20,7 @@ public class CouleurDTO {
 
     public CouleurDTO(CouleurEntity couleurEntity){
         id = couleurEntity.getId();
-        nom = couleurEntity.getNom();
+        nom = couleurEntity.getNomCouleur();
     }
 
     public static List<CouleurDTO> toDTOList(List<CouleurEntity> couleurEntities) {

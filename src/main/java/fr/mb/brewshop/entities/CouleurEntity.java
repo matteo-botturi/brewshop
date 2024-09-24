@@ -6,13 +6,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity(name = "COULEUR")
+@Entity
+@Table(name = "COULEUR")
 public class CouleurEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_COULEUR", unique = true, nullable = false)
+    @Column(name = "ID_COULEUR", nullable = false)
     private Integer id;
 
-    @Column(name = "NOM_COULEUR", unique = true, nullable = false)
-    private String nom;
+    @Column(name = "NOM_COULEUR", unique = true, nullable = false, length = 25)
+    private String nomCouleur;
 }

@@ -3,7 +3,6 @@ package fr.mb.brewshop.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.Objects;
 
 @Getter
@@ -11,17 +10,16 @@ import java.util.Objects;
 @Entity
 @Table(name = "PAYS")
 public class CountryEntity {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "ID_PAYS")
-    private Integer idPays;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID_PAYS", nullable = false)
+    private Integer id;
 
-    @Basic
-    @Column(name = "NOM_PAYS")
+    @Column(name = "NOM_PAYS", unique = true, nullable = false, length = 40)
     private String nomPays;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_CONTINENT")
+    @JoinColumn(name = "ID_CONTINENT", nullable = false)
     private ContinentEntity continent;
 
     @Override
@@ -29,11 +27,11 @@ public class CountryEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CountryEntity that = (CountryEntity) o;
-        return Objects.equals(idPays, that.idPays);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(idPays);
+        return Objects.hashCode(id);
     }
 }

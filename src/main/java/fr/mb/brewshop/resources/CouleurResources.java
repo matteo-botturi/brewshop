@@ -32,10 +32,9 @@ public class CouleurResources {
     @APIResponse(responseCode = "404", description = "Color not found.")
     @Path("{id}")
     public Response getById(@PathParam("id") Integer id){
-        CouleurEntity couleurEntity = couleurRepository.findById(id);
-        if(couleurEntity == null)
-            return Response.status(404, "Ce couleur n'existe pas.").build();
-        return Response.ok(new CouleurDTO(couleurEntity)).build();
+        return couleurRepository.findByIdOptional(id)
+                .map(couleur -> Response.ok(new CouleurDTO(couleur)).build())
+                .orElse(Response.status(404, "Ce couleur n'existe pas.").build());
     }
 
     @Transactional
@@ -49,12 +48,12 @@ public class CouleurResources {
             return Response.status(Response.Status.BAD_REQUEST).entity("Le nom de la couleur ne peut pas être vide.").build();
 
         String formattedNomCouleur = StringFormatterService.singleWord(nomCouleur);
-        boolean exists = couleurRepository.find("nom", formattedNomCouleur).firstResultOptional().isPresent();
+        boolean exists = couleurRepository.find("nomCouleur", formattedNomCouleur).firstResultOptional().isPresent();
         if (exists)
             return Response.status(Response.Status.CONFLICT).entity("Le couleur existe déjà.").build();
 
         CouleurEntity couleurEntity = new CouleurEntity();
-        couleurEntity.setNom(nomCouleur);
+        couleurEntity.setNomCouleur(formattedNomCouleur);
         couleurRepository.persist(couleurEntity);
 
         UriBuilder uriBuilder = uriInfo.getRequestUriBuilder();
@@ -72,13 +71,13 @@ public class CouleurResources {
         if (newColorName == null || newColorName.isBlank())
             return Response.status(Response.Status.BAD_REQUEST).entity("Le nom de la couleur ne peut pas être vide.").build();
 
-        CouleurEntity couleurEntity = couleurRepository.findById(id);
-        if (couleurEntity == null)
-            return Response.status(Response.Status.NOT_FOUND).entity("Couleur non trouvée.").build();
-
-        String formattedNewColorName = StringFormatterService.singleWord(newColorName);
-        couleurEntity.setNom(formattedNewColorName);
-        return Response.ok(new CouleurDTO(couleurEntity)).build();
+        return couleurRepository.findByIdOptional(id)
+                .map(couleur -> {
+                    String formattedNewColorName = StringFormatterService.singleWord(newColorName);
+                    couleur.setNomCouleur(formattedNewColorName);
+                    return Response.ok(new CouleurDTO(couleur)).build();
+                })
+                .orElse(Response.status(Response.Status.NOT_FOUND).entity("Couleur non trouvée.").build());
     }
 
     @Transactional
