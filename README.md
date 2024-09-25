@@ -4,6 +4,10 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
+## Rappel : Inclure l'URI du continent dans le corps de la réponse
+
+Pour inclure l'**URI du continent** dans le **corps de la réponse**, il suffit de décommenter dans les classes **`ContinentDTO`** et **`ContinentResources`**.
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:

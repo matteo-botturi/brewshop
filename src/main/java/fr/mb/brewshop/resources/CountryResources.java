@@ -20,7 +20,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class CountryResources {
     @Inject
-    private CountryRepository countryRepository;
+    CountryRepository countryRepository;
 
     @GET
     @Operation(summary = "Get all countries", description = "Retrieve the list of all countries")

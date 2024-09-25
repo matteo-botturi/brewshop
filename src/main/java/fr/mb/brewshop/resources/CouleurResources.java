@@ -18,7 +18,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class CouleurResources {
     @Inject
-    private CouleurRepository couleurRepository;
+    CouleurRepository couleurRepository;
 
     @GET
     public Response getAll(){

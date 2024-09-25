@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -19,4 +20,17 @@ public class TicketPK implements Serializable {
     private Integer annee;
     @Column(name = "NUMERO_TICKET")
     private Integer numeroTicket;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TicketPK ticketPK = (TicketPK) o;
+        return Objects.equals(annee, ticketPK.annee) && Objects.equals(numeroTicket, ticketPK.numeroTicket);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(annee, numeroTicket);
+    }
 }
