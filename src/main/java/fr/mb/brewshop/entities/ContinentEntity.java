@@ -1,37 +1,36 @@
 package fr.mb.brewshop.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.List;
-import java.util.Objects;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
-@Table(name = "CONTINENT")
+@Table(name = "CONTINENT", schema = "dbo", uniqueConstraints = {
+        @UniqueConstraint(name = "UQ_NOM_CONTINENT", columnNames = {"NOM_CONTINENT"})
+})
 public class ContinentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_CONTINENT", unique = true, nullable = false)
+    @Column(name = "ID_CONTINENT", nullable = false)
     private Integer id;
 
-    @Column(name = "NOM_CONTINENT", unique = true, nullable = false, length = 25)
+    @Size(max = 25)
+    @NotNull
+    @Column(name = "NOM_CONTINENT", nullable = false, length = 25)
     private String nomContinent;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "continent")
-    private List<CountryEntity> countries;
+    @OneToMany(mappedBy = "continent")
+    private Set<PaysEntity> listPays = new LinkedHashSet<>();
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ContinentEntity that = (ContinentEntity) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
+    public ContinentEntity(String nomContinent) {
+        this.nomContinent = nomContinent;
     }
 }

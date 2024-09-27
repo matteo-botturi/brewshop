@@ -20,7 +20,6 @@ public class TestResources {
     @Transactional
     public Response testPopulate() {
         dataInitializer.populateDatabase();
-        return Response.ok("Database popolato").build();
+        return Response.ok("BDD initialisée").build();
     }
 }
-

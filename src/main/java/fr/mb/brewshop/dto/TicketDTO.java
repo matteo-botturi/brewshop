@@ -22,8 +22,8 @@ public class TicketDTO {
     private String heureVente;
 
     public TicketDTO(TicketEntity ticketEntity) {
-        this.annee = ticketEntity.getTicketPk().getAnnee();
-        this.numeroTicket = ticketEntity.getTicketPk().getNumeroTicket();
+        this.annee = ticketEntity.getId().getAnnee();
+        this.numeroTicket = ticketEntity.getId().getNumeroTicket();
         this.dateVente = (ticketEntity.getDateVente() != null) ? ticketEntity.getDateVente().toString() : null;
         this.heureVente = (ticketEntity.getHeureVente() != null) ? ticketEntity.getHeureVente().toString() : null;
     }
@@ -32,4 +32,3 @@ public class TicketDTO {
         return ticketEntities.stream().map(TicketDTO::new).collect(Collectors.toList());
     }
 }
-

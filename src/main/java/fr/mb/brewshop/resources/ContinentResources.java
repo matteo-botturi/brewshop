@@ -2,10 +2,10 @@ package fr.mb.brewshop.resources;
 
 import fr.mb.brewshop.dto.ContinentDTO;
 import fr.mb.brewshop.entities.ContinentEntity;
-import fr.mb.brewshop.entities.CountryEntity;
+import fr.mb.brewshop.entities.PaysEntity;
 import fr.mb.brewshop.outils.StringFormatterService;
 import fr.mb.brewshop.repositories.ContinentRepository;
-import fr.mb.brewshop.repositories.CountryRepository;
+import fr.mb.brewshop.repositories.PaysRepository;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -17,7 +17,7 @@ import java.net.URI;
 import java.util.List;
 
 @Path("/continents/")
-@Tag(name = "Continents", description = "Operations related to continents")
+@Tag(name = "Continents", description = "Opérations liées aux continents")
 @Produces(MediaType.APPLICATION_JSON)
 public class ContinentResources {
 
@@ -25,14 +25,14 @@ public class ContinentResources {
     ContinentRepository continentRepository;
 
     @Inject
-    CountryRepository countryRepository;
+    PaysRepository paysRepository;
 
     @Context
     private UriInfo uriInfo;
 
     @GET
-    @Operation(summary = "Get all continents", description = "Retrieve the list of all continents")
-    @APIResponse(responseCode = "200", description = "List of continents retrieved successfully")
+    @Operation(summary = "Obtenir tous les continents", description = "Récupérer la liste de tous les continents")
+    @APIResponse(responseCode = "200", description = "Liste des continents récupérée avec succès")
     public Response getAll() {
         List<ContinentEntity> continentEntities = continentRepository.listAll();
         List<ContinentDTO> continentDTOs = ContinentDTO.toDtoList(continentEntities);
@@ -41,12 +41,12 @@ public class ContinentResources {
 
     @GET
     @Path("{id}")
-    @Operation(summary = "Continent by Id", description = "Search a continent by its ID")
-    @APIResponse(responseCode = "200", description = "Ok, continent found")
-    @APIResponse(responseCode = "404", description = "Continent not found")
+    @Operation(summary = "Continent par ID", description = "Rechercher un continent par son ID")
+    @APIResponse(responseCode = "200", description = "Ok, continent trouvé")
+    @APIResponse(responseCode = "404", description = "Continent non trouvé")
     public Response getById(@PathParam("id") Integer id) {
         ContinentEntity continent = continentRepository.findById(id);
-        if (continent == null) return Response.status(404,"Cet identifiant n'existe pas").build();
+        if (continent == null) return Response.status(Response.Status.NOT_FOUND).build();
         ContinentDTO continentDTO = new ContinentDTO(continent);
         return Response.ok(continentDTO).build();
     }
@@ -54,32 +54,44 @@ public class ContinentResources {
     @Transactional
     @POST
     @Path("{id}/{name}")
-    public Response createCountry(@PathParam("id") Integer id, @PathParam("name") String countryName) {
-        if (countryName == null || countryName.isBlank())
-            return Response.status(Response.Status.BAD_REQUEST).entity("Le nom du pays ne peut pas être vide.").build();
-
-        ContinentEntity continentEntity = continentRepository.findById(id);
-        if (continentEntity == null) return Response.status(404, "Not Found").build();
-
-        String formattedCountryName = StringFormatterService.formatCountryName(countryName);
-
-        boolean countryExists = continentEntity.getCountries().stream()
-                .anyMatch(country ->
-                        StringFormatterService.formatCountryName(country.getNomPays())
-                                .equalsIgnoreCase(formattedCountryName));
-        if (countryExists) {
-            return Response.status(Response.Status.CONFLICT)
-                    .entity("Le pays '" + formattedCountryName + "' existe déjà pour ce continent.")
+    @Operation(summary = "Créer un nouveau pays", description = "Ajouter un nouveau pays à un continent existant")
+    @APIResponse(responseCode = "201", description = "Le pays a été créé avec succès")
+    @APIResponse(responseCode = "400", description = "Nom de pays invalide")
+    @APIResponse(responseCode = "404", description = "Continent non trouvé")
+    @APIResponse(responseCode = "409", description = "Le pays existe déjà pour ce continent")
+    public Response createCountry(@PathParam("id") Integer id, @PathParam("name") String nomPays) {
+        if (nomPays == null || nomPays.isBlank()){
+            String errorMessage = "{\"message\": \"Le nom du pays ne peut pas être vide.\"}";
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(errorMessage)
+                    .type(MediaType.APPLICATION_JSON)
                     .build();
         }
 
-        CountryEntity countryEntity = new CountryEntity();
-        countryEntity.setNomPays(formattedCountryName);
-        countryEntity.setContinent(continentEntity);
-        countryRepository.persistAndFlush(countryEntity);
-        continentEntity.getCountries().add(countryEntity);
+        ContinentEntity continentEntity = continentRepository.findById(id);
+        if (continentEntity == null) return Response.status(Response.Status.NOT_FOUND).build();
 
-        URI countryUri = uriInfo.getBaseUriBuilder().path("/countries/" + countryEntity.getId()).build();
+        String formattedNomPays = StringFormatterService.formatCountryName(nomPays);
+
+        boolean countryExists = continentEntity.getListPays().stream()
+                .anyMatch(country ->
+                        StringFormatterService.formatCountryName(country.getNomPays())
+                                .equalsIgnoreCase(formattedNomPays));
+        if (countryExists) {
+            String errorMessage = "{\"message\": \"Le pays '" + formattedNomPays + "' existe déjà pour ce continent.\"}";
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(errorMessage)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+
+        PaysEntity paysEntity = new PaysEntity();
+        paysEntity.setNomPays(formattedNomPays);
+        paysEntity.setContinent(continentEntity);
+        paysRepository.persistAndFlush(paysEntity);
+        continentEntity.getListPays().add(paysEntity);
+
+        URI countryUri = uriInfo.getBaseUriBuilder().path("/pays/" + paysEntity.getId()).build();
         //URI baseUri = uriInfo.getBaseUri();
         ContinentDTO continentDTO = new ContinentDTO(continentEntity, true/*, baseUri*/);
 

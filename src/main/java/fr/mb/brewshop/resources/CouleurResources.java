@@ -1,11 +1,14 @@
 package fr.mb.brewshop.resources;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import fr.mb.brewshop.dto.CouleurDTO;
 import fr.mb.brewshop.entities.CouleurEntity;
 import fr.mb.brewshop.outils.StringFormatterService;
 import fr.mb.brewshop.repositories.CouleurRepository;
+import fr.mb.brewshop.views.Views;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -14,43 +17,53 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 
 @Path("/couleurs/")
-@Tag(name = "Couleur")
+@Tag(name = "Couleur", description = "Opérations liées aux couleurs")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class CouleurResources {
+
     @Inject
     CouleurRepository couleurRepository;
 
     @GET
+    @Operation(summary = "Obtenir tous les couleurs", description = "Récupérer la liste de tous les couleurs")
+    @APIResponse(responseCode = "200", description = "Liste des couleurs récupérée avec succès")
+    @JsonView(Views.Internal.class)
     public Response getAll(){
         List<CouleurEntity> couleurEntities = couleurRepository.listAll();
         return Response.ok(CouleurDTO.toDTOList(couleurEntities)).build();
     }
 
     @GET
-    @Operation(summary = "Color by ID", description = "Select a color by its ID.")
-    @APIResponse(responseCode = "200", description = "Ok, color found.")
-    @APIResponse(responseCode = "404", description = "Color not found.")
+    @Operation(summary = "Couleur par ID", description = "Sélectionner une couleur par son ID.")
+    @APIResponse(responseCode = "200", description = "Ok, couleur trouvée.")
+    @APIResponse(responseCode = "404", description = "Couleur non trouvée.")
     @Path("{id}")
+    @JsonView(Views.Internal.class)
     public Response getById(@PathParam("id") Integer id){
         return couleurRepository.findByIdOptional(id)
                 .map(couleur -> Response.ok(new CouleurDTO(couleur)).build())
-                .orElse(Response.status(404, "Ce couleur n'existe pas.").build());
+                .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
     @Transactional
     @POST
     @APIResponse(responseCode = "201", description = "La ressource a été créée.")
     @APIResponse(responseCode = "400", description = "Nom de couleur invalide.")
-    @APIResponse(responseCode = "409", description = "Le couleur existe déjà.")
+    @APIResponse(responseCode = "409", description = "La couleur existe déjà.")
     @APIResponse(responseCode = "500", description = "Le serveur a rencontré un problème.")
-    public Response create(String nomCouleur, @Context UriInfo uriInfo) {
-        if (nomCouleur == null || nomCouleur.isBlank())
-            return Response.status(Response.Status.BAD_REQUEST).entity("Le nom de la couleur ne peut pas être vide.").build();
+    @JsonView(Views.Public.class)
+    public Response create(@Valid @JsonView(Views.Public.class) CouleurDTO couleurDTO, @Context UriInfo uriInfo) {
+        String formattedNomCouleur = StringFormatterService.singleWord(couleurDTO.getNom());
 
-        String formattedNomCouleur = StringFormatterService.singleWord(nomCouleur);
         boolean exists = couleurRepository.find("nomCouleur", formattedNomCouleur).firstResultOptional().isPresent();
-        if (exists)
-            return Response.status(Response.Status.CONFLICT).entity("Le couleur existe déjà.").build();
+        if (exists) {
+            String errorMessage = "{\"message\": \"Le couleur existe déjà.\"}";
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(errorMessage)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
 
         CouleurEntity couleurEntity = new CouleurEntity();
         couleurEntity.setNomCouleur(formattedNomCouleur);
@@ -67,24 +80,20 @@ public class CouleurResources {
     @APIResponse(responseCode = "400", description = "Nom de couleur invalide.")
     @APIResponse(responseCode = "404", description = "Couleur non trouvée.")
     @Transactional
-    public Response update(@PathParam("id") Integer id, String newColorName) {
-        if (newColorName == null || newColorName.isBlank())
-            return Response.status(Response.Status.BAD_REQUEST).entity("Le nom de la couleur ne peut pas être vide.").build();
-
-        return couleurRepository.findByIdOptional(id)
-                .map(couleur -> {
-                    String formattedNewColorName = StringFormatterService.singleWord(newColorName);
-                    couleur.setNomCouleur(formattedNewColorName);
-                    return Response.ok(new CouleurDTO(couleur)).build();
-                })
-                .orElse(Response.status(Response.Status.NOT_FOUND).entity("Couleur non trouvée.").build());
+    @JsonView(Views.Public.class)
+    public Response update(@PathParam("id") Integer id, @Valid @JsonView(Views.Public.class) CouleurDTO couleurDTO) {
+        return couleurRepository.findByIdOptional(id).map(couleur -> {
+            String formattedNewColorName = StringFormatterService.singleWord(couleurDTO.getNom());
+            couleur.setNomCouleur(formattedNewColorName);
+            return Response.ok(new CouleurDTO(couleur)).build();
+        }).orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
-    @Transactional
     @DELETE
-    @APIResponse(responseCode = "204", description = "Le couleur a été supprimée avec succès.")
+    @APIResponse(responseCode = "204", description = "La couleur a été supprimée avec succès.")
     @APIResponse(responseCode = "404", description = "Couleur non trouvée.")
     @Path("{id}")
+    @Transactional
     public Response deleteById(@PathParam("id") Integer id){
         if (couleurRepository.deleteById(id))
             return Response.noContent().build();

@@ -1,41 +1,37 @@
 package fr.mb.brewshop.entities;
 
 import fr.mb.brewshop.outils.TicketPK;
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Objects;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-@Entity(name = "TICKET")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@Entity
+@Table(name = "TICKET", schema = "dbo")
 public class TicketEntity {
     @EmbeddedId
-    TicketPK ticketPk;
+    private TicketPK id;
+
     @Column(name = "DATE_VENTE")
-    LocalDate dateVente;
+    private LocalDate dateVente;
+
     @Column(name = "HEURE_VENTE")
-    LocalTime heureVente;
+    private LocalTime heureVente;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TicketEntity that = (TicketEntity) o;
-        return Objects.equals(ticketPk, that.ticketPk);
-    }
+    @OneToMany(mappedBy = "ticketEntity")
+    private Set<VendreEntity> ventes = new LinkedHashSet<>();
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(ticketPk);
+    public TicketEntity(TicketPK id, LocalDate dateVente, LocalTime heureVente) {
+        this.id = id;
+        this.dateVente = dateVente;
+        this.heureVente = heureVente;
     }
 }
-
