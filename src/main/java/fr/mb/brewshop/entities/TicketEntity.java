@@ -2,7 +2,6 @@ package fr.mb.brewshop.entities;
 
 import fr.mb.brewshop.outils.TicketPK;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

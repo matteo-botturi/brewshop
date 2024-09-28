@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "FABRICANT", schema = "dbo", uniqueConstraints = {
         @UniqueConstraint(name = "UQ_NOM_FABRICANT", columnNames = {"NOM_FABRICANT"})
@@ -28,4 +30,7 @@ public class FabricantEntity {
     @OneToMany(mappedBy = "fabricant")
     private Set<MarqueEntity> marques = new LinkedHashSet<>();
 
+    public FabricantEntity(String nomFabricant) {
+        this.nomFabricant = nomFabricant;
+    }
 }

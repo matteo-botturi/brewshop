@@ -19,8 +19,8 @@ public class VendreEntity {
     @MapsId("id")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumns({
-            @JoinColumn(name = "annee", referencedColumnName = "ANNEE"),
-            @JoinColumn(name = "numeroTicket", referencedColumnName = "NUMERO_TICKET")
+            @JoinColumn(name = "ANNEE", referencedColumnName = "ANNEE"),
+            @JoinColumn(name = "NUMERO_TICKET", referencedColumnName = "NUMERO_TICKET")
     })
     private TicketEntity ticketEntity;
 
@@ -36,5 +36,4 @@ public class VendreEntity {
     @NotNull
     @Column(name = "PRIX_VENTE", nullable = false)
     private BigDecimal prixVente;
-
 }

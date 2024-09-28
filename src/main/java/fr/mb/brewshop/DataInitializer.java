@@ -1,14 +1,8 @@
 package fr.mb.brewshop;
 
-import fr.mb.brewshop.entities.ContinentEntity;
-import fr.mb.brewshop.entities.CouleurEntity;
-import fr.mb.brewshop.entities.PaysEntity;
-import fr.mb.brewshop.entities.TicketEntity;
+import fr.mb.brewshop.entities.*;
 import fr.mb.brewshop.outils.TicketPK;
-import fr.mb.brewshop.repositories.ContinentRepository;
-import fr.mb.brewshop.repositories.CouleurRepository;
-import fr.mb.brewshop.repositories.PaysRepository;
-import fr.mb.brewshop.repositories.TicketRepository;
+import fr.mb.brewshop.repositories.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -31,6 +25,12 @@ public class DataInitializer {
 
     @Inject
     TicketRepository ticketRepository;
+
+    @Inject
+    FabricantRepository fabricantRepository;
+
+    @Inject
+    MarqueRepository marqueRepository;
 
     @PostConstruct
     public void populateDatabase() {
@@ -57,6 +57,22 @@ public class DataInitializer {
                 paysRepository.persist(pays1);
                 paysRepository.persist(pays2);
                 paysRepository.persist(pays3);
+
+                // Fabricant
+                if(fabricantRepository.count() == 0){
+                    FabricantEntity fabricant1 = new FabricantEntity("Luppolajo");
+                    FabricantEntity fabricant2 = new FabricantEntity("Birrificio Inesistente");
+                    fabricantRepository.persist(fabricant1);
+                    fabricantRepository.persist(fabricant2);
+
+                    // Marque
+                    if(marqueRepository.count() == 0){
+                        MarqueEntity marque1 = new MarqueEntity("Heineken", pays1, fabricant1);
+                        MarqueEntity marque2 = new MarqueEntity("Becks", pays2, fabricant2);
+                        marqueRepository.persist(marque1);
+                        marqueRepository.persist(marque2);
+                    }
+                }
             }
         }
 

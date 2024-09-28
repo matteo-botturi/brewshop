@@ -17,6 +17,7 @@ import java.util.Set;
         @UniqueConstraint(name = "UQ_NOM_COULEUR", columnNames = {"NOM_COULEUR"})
 })
 public class CouleurEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_COULEUR", nullable = false)

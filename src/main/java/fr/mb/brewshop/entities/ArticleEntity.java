@@ -46,7 +46,7 @@ public class ArticleEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_TYPE")
-    private TypebiereEntity typeBiere;
+    private TypeBiereEntity typeBiere;
 
     @Column(name = "STOCK")
     private Integer stock;

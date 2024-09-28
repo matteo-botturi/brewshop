@@ -17,6 +17,7 @@ import java.util.Set;
         @UniqueConstraint(name = "UQ_NOM_CONTINENT", columnNames = {"NOM_CONTINENT"})
 })
 public class ContinentEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_CONTINENT", nullable = false)

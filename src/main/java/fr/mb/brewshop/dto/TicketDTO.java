@@ -2,6 +2,7 @@ package fr.mb.brewshop.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.mb.brewshop.entities.TicketEntity;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,12 +13,18 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 public class TicketDTO {
+
+    @NotNull
     @JsonProperty(index = 1)
     private Integer annee;
+
+    @NotNull
     @JsonProperty(index = 2)
     private Integer numeroTicket;
+
     @JsonProperty(index = 3)
     private String dateVente;
+
     @JsonProperty(index = 4)
     private String heureVente;
 

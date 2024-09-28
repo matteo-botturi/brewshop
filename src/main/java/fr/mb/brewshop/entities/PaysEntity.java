@@ -32,7 +32,7 @@ public class PaysEntity {
     @JoinColumn(name = "ID_CONTINENT", nullable = false)
     private ContinentEntity continent;
 
-    @OneToMany(mappedBy = "idPays")
+    @OneToMany(mappedBy = "pays")
     private Set<MarqueEntity> marques = new LinkedHashSet<>();
 
     public PaysEntity(String nomPays, ContinentEntity continent) {

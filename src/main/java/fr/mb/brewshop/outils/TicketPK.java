@@ -2,6 +2,7 @@ package fr.mb.brewshop.outils;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,12 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketPK implements Serializable {
+
+    @NotNull
     @Column(name = "ANNEE", nullable = false)
     private Integer annee;
+
+    @NotNull
     @Column(name = "NUMERO_TICKET", nullable = false)
     private Integer numeroTicket;
 

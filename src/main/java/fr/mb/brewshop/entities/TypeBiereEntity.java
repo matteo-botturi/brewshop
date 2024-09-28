@@ -15,7 +15,7 @@ import java.util.Set;
 @Table(name = "TYPEBIERE", schema = "dbo", uniqueConstraints = {
         @UniqueConstraint(name = "UQ_NOM_TYPE", columnNames = {"NOM_TYPE"})
 })
-public class TypebiereEntity {
+public class TypeBiereEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_TYPE", nullable = false)
