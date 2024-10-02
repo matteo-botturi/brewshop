@@ -44,10 +44,10 @@ public class ContinentResources {
     @Operation(summary = "Continent par ID", description = "Rechercher un continent par son ID")
     @APIResponse(responseCode = "200", description = "Ok, continent trouvé")
     @APIResponse(responseCode = "404", description = "Continent non trouvé")
-    public Response getById(@PathParam("id") Integer id) {
+    public Response getById(@PathParam("id") Integer id, @QueryParam("includePays") @DefaultValue("false") boolean includePays) {
         ContinentEntity continent = continentRepository.findById(id);
         if (continent == null) return Response.status(Response.Status.NOT_FOUND).build();
-        ContinentDTO continentDTO = new ContinentDTO(continent);
+        ContinentDTO continentDTO = new ContinentDTO(continent, includePays);
         return Response.ok(continentDTO).build();
     }
 
@@ -59,7 +59,7 @@ public class ContinentResources {
     @APIResponse(responseCode = "400", description = "Nom de pays invalide")
     @APIResponse(responseCode = "404", description = "Continent non trouvé")
     @APIResponse(responseCode = "409", description = "Le pays existe déjà pour ce continent")
-    public Response createCountry(@PathParam("id") Integer id, @PathParam("name") String nomPays) {
+    public Response createPays(@PathParam("id") Integer id, @PathParam("name") String nomPays) {
         if (nomPays == null || nomPays.isBlank()){
             String errorMessage = "{\"message\": \"Le nom du pays ne peut pas être vide.\"}";
             return Response.status(Response.Status.BAD_REQUEST)
@@ -73,11 +73,11 @@ public class ContinentResources {
 
         String formattedNomPays = StringFormatterService.formatCountryName(nomPays);
 
-        boolean countryExists = continentEntity.getListPays().stream()
+        boolean paysExists = continentEntity.getListPays().stream()
                 .anyMatch(country ->
                         StringFormatterService.formatCountryName(country.getNomPays())
                                 .equalsIgnoreCase(formattedNomPays));
-        if (countryExists) {
+        if (paysExists) {
             String errorMessage = "{\"message\": \"Le pays '" + formattedNomPays + "' existe déjà pour ce continent.\"}";
             return Response.status(Response.Status.CONFLICT)
                     .entity(errorMessage)

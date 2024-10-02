@@ -1,5 +1,6 @@
 package fr.mb.brewshop.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.mb.brewshop.entities.FabricantEntity;
 import fr.mb.brewshop.entities.MarqueEntity;
@@ -10,8 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -27,6 +28,7 @@ public class FabricantDTO {
     @JsonProperty(index = 2)
     private String nom;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 3)
     private List<FabricantDTOMarques> marques;
     /*
@@ -36,7 +38,7 @@ public class FabricantDTO {
      */
 
     public FabricantDTO(FabricantEntity fabricantEntity) {
-        this(fabricantEntity, true/*, null*/);
+        this(fabricantEntity, false/*, null*/);
     }
 
     public FabricantDTO(FabricantEntity fabricantEntity, boolean includeMarques/*, URI baseUri*/){
@@ -46,17 +48,19 @@ public class FabricantDTO {
         //this.uri = (baseUri != null) ? baseUri.resolve("fabricants/" + id) : null;
     }
 
-    private List<FabricantDTOMarques> createListMarques(Set<MarqueEntity> marques, boolean includeMarques) {
+    private List<FabricantDTOMarques> createListMarques(List<MarqueEntity> marques, boolean includeMarques) {
         if (includeMarques && marques != null)
             return marques.stream()
                     .map(country -> new FabricantDTOMarques(country.getId(), country.getNomMarque()))
                     .collect(Collectors.toList());
-        else
-            return new ArrayList<>();
+        return null;
     }
 
     public static List<FabricantDTO> toDtoList(List<FabricantEntity> fabricantEntities) {
-        return fabricantEntities.stream().map(FabricantDTO::new).collect(Collectors.toList());
+        return fabricantEntities.stream()
+                .sorted(Comparator.comparing(FabricantEntity::getId))
+                .map(fabricant -> new FabricantDTO(fabricant, false))
+                .collect(Collectors.toList());
     }
 
     @AllArgsConstructor

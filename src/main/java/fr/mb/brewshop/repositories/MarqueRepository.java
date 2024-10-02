@@ -6,4 +6,5 @@ import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class MarqueRepository implements PanacheRepositoryBase<MarqueEntity, Integer> {
+
 }

@@ -6,8 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,7 +28,7 @@ public class CouleurEntity {
     private String nomCouleur;
 
     @OneToMany(mappedBy = "couleur")
-    private Set<ArticleEntity> articles = new LinkedHashSet<>();
+    private List<ArticleEntity> articles;
 
     public CouleurEntity(String nomCouleur) {
         this.nomCouleur = nomCouleur;

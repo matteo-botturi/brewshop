@@ -1,10 +1,16 @@
 package fr.mb.brewshop.resources;
 
 import fr.mb.brewshop.dto.TicketDTO;
+import fr.mb.brewshop.dto.VendreDTO;
+import fr.mb.brewshop.entities.ArticleEntity;
 import fr.mb.brewshop.entities.TicketEntity;
+import fr.mb.brewshop.entities.VendreEntity;
 import fr.mb.brewshop.outils.TicketPK;
+import fr.mb.brewshop.repositories.ArticleRepository;
 import fr.mb.brewshop.repositories.TicketRepository;
+import fr.mb.brewshop.repositories.VendreRepository;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -19,6 +25,12 @@ import java.util.List;
 public class TicketResources {
     @Inject
     TicketRepository ticketRepository;
+
+    @Inject
+    VendreRepository vendreRepository;
+
+    @Inject
+    ArticleRepository articleRepository;
 
     @GET
     @Operation(summary = "Obtenir tous les tickets", description = "Récupérer la liste de tous les tickets")
@@ -42,7 +54,6 @@ public class TicketResources {
         return Response.ok(ticketDTOs).build();
     }
 
-
     @GET
     @Path("{annee}/{numero}")
     @Operation(summary = "Ticket par ID", description = "Récupérer un ticket spécifique par son année et numéro")
@@ -56,4 +67,77 @@ public class TicketResources {
         TicketDTO ticketDTO = new TicketDTO(ticket);
         return Response.ok(ticketDTO).build();
     }
+
+    @GET
+    @Path("/tickets/{annee}/{numeroTicket}/ventes")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Obtenir toutes les ventes d'un ticket", description = "Récupérer toutes les ventes associées à un ticket spécifique")
+    @APIResponse(responseCode = "200", description = "Liste des ventes récupérée avec succès")
+    public Response getAllVentesByTicket(@PathParam("annee") Integer annee, @PathParam("numeroTicket") Integer numeroTicket) {
+        List<VendreEntity> ventes = vendreRepository.find("ticketEntity.id.annee = ?1 and ticketEntity.id.numeroTicket = ?2", annee, numeroTicket).list();
+        if (ventes.isEmpty())
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Aucune vente trouvée pour ce ticket.\"}").build();
+        return Response.ok(VendreDTO.toDTOList(ventes)).build();
+    }
+
+    @POST
+    @Path("/tickets/{annee}/{numeroTicket}/ventes")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Ajouter une nouvelle vente", description = "Ajouter un nouvel article vendu à un ticket existant")
+    @APIResponse(responseCode = "201", description = "Vente créée avec succès")
+    @Transactional
+    public Response createVente(@PathParam("annee") Integer annee, @PathParam("numeroTicket") Integer numeroTicket, VendreDTO vendreDTO) {
+        TicketEntity ticket = ticketRepository.findById(new TicketPK(annee, numeroTicket));
+        if (ticket == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Ticket non trouvé.\"}").build();
+
+        ArticleEntity article = articleRepository.findById(vendreDTO.getIdArticle());
+        if (article == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Article non trouvé.\"}").build();
+
+        VendreEntity vente = new VendreEntity();
+        vente.setTicketEntity(ticket);
+        vente.setArticle(article);
+        vente.setQuantite(vendreDTO.getQuantite());
+        vente.setPrixVente(vendreDTO.getPrixVente());
+
+        vendreRepository.persist(vente);
+        return Response.status(Response.Status.CREATED).entity(new VendreDTO(vente)).build();
+    }
+
+    @PUT
+    @Path("/tickets/{annee}/{numeroTicket}/ventes/{articleId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Mettre à jour une vente", description = "Modifier la quantité ou le prix d'une vente")
+    @APIResponse(responseCode = "200", description = "Vente mise à jour avec succès")
+    @Transactional
+    public Response updateVente(@PathParam("annee") Integer annee, @PathParam("numeroTicket") Integer numeroTicket, @PathParam("articleId") Integer articleId, VendreDTO vendreDTO) {
+        VendreEntity vente = vendreRepository.find("ticketEntity.id.annee = ?1 and ticketEntity.id.numeroTicket = ?2 and article.id = ?3", annee, numeroTicket, articleId).firstResult();
+        if (vente == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Vente non trouvée.\"}").build();
+
+        vente.setQuantite(vendreDTO.getQuantite());
+        vente.setPrixVente(vendreDTO.getPrixVente());
+        vendreRepository.persist(vente);
+
+        return Response.ok(new VendreDTO(vente)).build();
+    }
+
+    @DELETE
+    @Path("/tickets/{annee}/{numeroTicket}/ventes/{articleId}")
+    @Operation(summary = "Supprimer une vente", description = "Supprimer une vente par son ID")
+    @APIResponse(responseCode = "204", description = "Vente supprimée avec succès")
+    @Transactional
+    public Response deleteVente(@PathParam("annee") Integer annee, @PathParam("numeroTicket") Integer numeroTicket, @PathParam("articleId") Integer articleId) {
+        long deletedCount = vendreRepository.delete("ticketEntity.id.annee = ?1 and ticketEntity.id.numeroTicket = ?2 and article.id = ?3", annee, numeroTicket, articleId);
+        if (deletedCount > 0)
+            return Response.noContent().build();
+        else
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Vente non trouvée.\"}").build();
+    }
+
+
+
 }

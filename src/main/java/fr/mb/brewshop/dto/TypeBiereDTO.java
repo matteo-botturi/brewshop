@@ -7,7 +7,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.Set;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
@@ -28,9 +29,10 @@ public class TypeBiereDTO {
         this.nom = typeBiereEntity.getNomType();
     }
 
-    public static Set<TypeBiereDTO> toDTOSet(Set<TypeBiereEntity> typeBiereEntities) {
+    public static List<TypeBiereDTO> toDTOList(List<TypeBiereEntity> typeBiereEntities) {
         return typeBiereEntities.stream()
+                .sorted(Comparator.comparing(TypeBiereEntity::getId))
                 .map(TypeBiereDTO::new)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 }

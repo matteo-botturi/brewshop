@@ -9,8 +9,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -33,6 +33,8 @@ public class CouleurDTO {
     }
 
     public static List<CouleurDTO> toDTOList(List<CouleurEntity> couleurEntities) {
-        return couleurEntities.stream().map(CouleurDTO::new).collect(Collectors.toList());
+        return couleurEntities.stream()
+                .sorted(Comparator.comparing(CouleurEntity::getId))
+                .map(CouleurDTO::new).collect(Collectors.toList());
     }
 }

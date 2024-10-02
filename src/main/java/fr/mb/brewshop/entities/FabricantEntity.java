@@ -6,8 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,8 +27,9 @@ public class FabricantEntity {
     private String nomFabricant;
 
     @OneToMany(mappedBy = "fabricant")
-    private Set<MarqueEntity> marques = new LinkedHashSet<>();
+    private List<MarqueEntity> marques;
 
+    //Only for DataInitializer
     public FabricantEntity(String nomFabricant) {
         this.nomFabricant = nomFabricant;
     }

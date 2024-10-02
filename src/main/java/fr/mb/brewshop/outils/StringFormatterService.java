@@ -15,4 +15,13 @@ public class StringFormatterService {
             formattedName.append(singleWord(word)).append(" ");
         return formattedName.toString().trim();
     }
+
+    public static String formatOthersName(String nomPays) {
+        nomPays = nomPays.trim().replaceAll("\\s+", " ");
+        String[] words = nomPays.split(" ");
+        StringBuilder formattedName = new StringBuilder();
+        for (String word : words)
+            formattedName.append(singleWord(word)).append(" ");
+        return formattedName.toString().trim();
+    }
 }

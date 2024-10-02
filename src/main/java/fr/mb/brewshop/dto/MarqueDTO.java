@@ -1,5 +1,6 @@
 package fr.mb.brewshop.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.mb.brewshop.entities.ArticleEntity;
 import fr.mb.brewshop.entities.MarqueEntity;
@@ -8,8 +9,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -25,41 +27,41 @@ public class MarqueDTO {
     @JsonProperty(index = 2)
     private String nom;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 3)
-    private PaysDTO pays;
+    private String pays;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 4)
-    private FabricantDTO fabricant;
+    private String fabricant;
 
-    //@JsonProperty(index = 5)
-    //private List<ArticleDTO> listArticles;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty(index = 5)
+    private List<ArticleDTO> articles;
     /*
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 4)
     private URI uri;
     */
-
-
-
     public MarqueDTO(MarqueEntity marqueEntity, boolean includeArticles/*, URI baseUri*/) {
         this.id = marqueEntity.getId();
         this.nom = marqueEntity.getNomMarque();
-        this.pays = new PaysDTO(marqueEntity.getPays());
-        this.fabricant = new FabricantDTO(marqueEntity.getFabricant());
-        //this.articles = includeArticles ? createListArticles(marqueEntity.getArticles()) : new ArrayList<>();
+        this.pays = marqueEntity.getPays() != null ? marqueEntity.getPays().getNomPays() : null;
+        this.fabricant = marqueEntity.getFabricant() != null ? marqueEntity.getFabricant().getNomFabricant() : null;
+        this.articles = includeArticles ? createListArticles(marqueEntity.getArticles()) : null;
         //this.uri = (baseUri != null) ? baseUri.resolve("continents/" + id) : null;
     }
-    /*
-    private List<ArticleDTO> createListArticles(Set<ArticleEntity> articleEntities) {
+
+    private List<ArticleDTO> createListArticles(List<ArticleEntity> articleEntities) {
         return articleEntities.stream()
-                .map(article -> new ArticleDTO(article.getId(), article.getNomArticle()))
+                .map(article -> new ArticleDTO(article, false))
                 .collect(Collectors.toList());
     }
-    */
 
-    public static List<MarqueDTO> toDTOList(List<MarqueEntity> marqueEntities, boolean includeArticles) {
+    public static List<MarqueDTO> toDTOList(List<MarqueEntity> marqueEntities) {
         return marqueEntities.stream()
-                .map(marque -> new MarqueDTO(marque, includeArticles))
+                .sorted(Comparator.comparing(MarqueEntity::getId))
+                .map(marque -> new MarqueDTO(marque, false))
                 .collect(Collectors.toList());
     }
 }

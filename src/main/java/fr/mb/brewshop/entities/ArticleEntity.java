@@ -5,10 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.math.BigDecimal;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -52,6 +50,5 @@ public class ArticleEntity {
     private Integer stock;
 
     @OneToMany(mappedBy = "article")
-    private Set<VendreEntity> ventes = new LinkedHashSet<>();
-
+    private List<VendreEntity> ventes;
 }

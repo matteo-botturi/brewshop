@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -36,8 +37,9 @@ public class MarqueEntity {
     private FabricantEntity fabricant;
 
     @OneToMany(mappedBy = "marque")
-    private Set<ArticleEntity> articles = new LinkedHashSet<>();
+    private List<ArticleEntity> articles;
 
+    //Only for DataInitializer
     public MarqueEntity(String nomMarque, PaysEntity pays, FabricantEntity fabricant) {
         this.nomMarque = nomMarque;
         this.pays = pays;
