@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +25,7 @@ public class FabricantDTO {
     @Size(max = 40)
     @NotNull
     @JsonProperty(index = 2)
-    private String nom;
+    private String nomFabricant;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 3)
@@ -43,7 +42,7 @@ public class FabricantDTO {
 
     public FabricantDTO(FabricantEntity fabricantEntity, boolean includeMarques/*, URI baseUri*/){
         this.id = fabricantEntity.getId();
-        this.nom = fabricantEntity.getNomFabricant();
+        this.nomFabricant = fabricantEntity.getNomFabricant();
         this.marques = createListMarques(fabricantEntity.getMarques(), includeMarques);
         //this.uri = (baseUri != null) ? baseUri.resolve("fabricants/" + id) : null;
     }

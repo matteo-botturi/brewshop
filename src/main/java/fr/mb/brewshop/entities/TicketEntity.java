@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,9 +24,10 @@ public class TicketEntity {
     @Column(name = "HEURE_VENTE")
     private LocalTime heureVente;
 
-    @OneToMany(mappedBy = "ticketEntity")
-    private Set<VendreEntity> ventes = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "ticket")
+    private List<VendreEntity> ventes;
 
+    //Only for DataInitializer
     public TicketEntity(TicketPK id, LocalDate dateVente, LocalTime heureVente) {
         this.id = id;
         this.dateVente = dateVente;

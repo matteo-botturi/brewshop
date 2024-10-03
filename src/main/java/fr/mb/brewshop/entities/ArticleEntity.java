@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "ARTICLE", schema = "dbo")
 public class ArticleEntity {
@@ -51,4 +53,16 @@ public class ArticleEntity {
 
     @OneToMany(mappedBy = "article")
     private List<VendreEntity> ventes;
+
+    //Only for DataInitializer
+    public ArticleEntity(String nomArticle, BigDecimal prixAchat, Integer volume, Double titrage, MarqueEntity marque, CouleurEntity couleur, TypeBiereEntity typeBiere, Integer stock) {
+        this.nomArticle = nomArticle;
+        this.prixAchat = prixAchat;
+        this.volume = volume;
+        this.titrage = titrage;
+        this.marque = marque;
+        this.couleur = couleur;
+        this.typeBiere = typeBiere;
+        this.stock = stock;
+    }
 }

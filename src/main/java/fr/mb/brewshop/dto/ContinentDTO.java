@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,7 @@ public class ContinentDTO {
     @Size(max = 25)
     @NotNull
     @JsonProperty(index = 2)
-    private String nom;
+    private String nomContinent;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 3)
@@ -42,7 +41,7 @@ public class ContinentDTO {
 
     public ContinentDTO(ContinentEntity continentEntity, boolean includePays/*, URI baseUri*/) {
         this.id = continentEntity.getId();
-        this.nom = continentEntity.getNomContinent();
+        this.nomContinent = continentEntity.getNomContinent();
         this.listPays = createListPays(continentEntity.getListPays(), includePays);
         //this.uri = (baseUri != null) ? baseUri.resolve("continents/" + id) : null;
     }

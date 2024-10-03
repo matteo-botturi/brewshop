@@ -35,7 +35,7 @@ public class TicketResources {
     @GET
     @Operation(summary = "Obtenir tous les tickets", description = "Récupérer la liste de tous les tickets")
     @APIResponse(responseCode = "200", description = "Liste des tickets récupérée avec succès")
-    public Response getAllTickets(){
+    public Response getAll(){
         List<TicketEntity> ticketEntities = ticketRepository.listAll();
         List<TicketDTO> ticketDTOs = TicketDTO.toDTOList(ticketEntities);
         return Response.ok(ticketDTOs).build();
@@ -46,7 +46,7 @@ public class TicketResources {
     @Operation(summary = "Tickets par année", description = "Récupérer les tickets d'une année spécifique")
     @APIResponse(responseCode = "200", description = "Liste des tickets de l'année récupérée avec succès")
     @APIResponse(responseCode = "404", description = "Aucun ticket trouvé pour cette année")
-    public Response getTicketsByAnnee(@PathParam("annee") Integer annee) {
+    public Response getByAnnee(@PathParam("annee") Integer annee) {
         List<TicketEntity> tickets = ticketRepository.findByAnnee(annee);
         if (tickets.isEmpty())
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -59,7 +59,7 @@ public class TicketResources {
     @Operation(summary = "Ticket par ID", description = "Récupérer un ticket spécifique par son année et numéro")
     @APIResponse(responseCode = "200", description = "Ticket trouvé avec succès")
     @APIResponse(responseCode = "404", description = "Ticket non trouvé")
-    public Response getTicketById(@PathParam("annee") Integer annee, @PathParam("numero") Integer numeroTicket) {
+    public Response getById(@PathParam("annee") Integer annee, @PathParam("numero") Integer numeroTicket) {
         TicketPK ticketPK = new TicketPK(annee, numeroTicket);
         TicketEntity ticket = ticketRepository.findById(ticketPK);
         if (ticket == null)
@@ -73,7 +73,7 @@ public class TicketResources {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Obtenir toutes les ventes d'un ticket", description = "Récupérer toutes les ventes associées à un ticket spécifique")
     @APIResponse(responseCode = "200", description = "Liste des ventes récupérée avec succès")
-    public Response getAllVentesByTicket(@PathParam("annee") Integer annee, @PathParam("numeroTicket") Integer numeroTicket) {
+    public Response getAllVentesByIdTicket(@PathParam("annee") Integer annee, @PathParam("numeroTicket") Integer numeroTicket) {
         List<VendreEntity> ventes = vendreRepository.find("ticketEntity.id.annee = ?1 and ticketEntity.id.numeroTicket = ?2", annee, numeroTicket).list();
         if (ventes.isEmpty())
             return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Aucune vente trouvée pour ce ticket.\"}").build();
@@ -86,6 +86,8 @@ public class TicketResources {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Ajouter une nouvelle vente", description = "Ajouter un nouvel article vendu à un ticket existant")
     @APIResponse(responseCode = "201", description = "Vente créée avec succès")
+    @APIResponse(responseCode = "400", description = "Stock insuffisant ou validation des données échouée")
+    @APIResponse(responseCode = "404", description = "Ticket ou Article non trouvé")
     @Transactional
     public Response createVente(@PathParam("annee") Integer annee, @PathParam("numeroTicket") Integer numeroTicket, VendreDTO vendreDTO) {
         TicketEntity ticket = ticketRepository.findById(new TicketPK(annee, numeroTicket));
@@ -96,13 +98,18 @@ public class TicketResources {
         if (article == null)
             return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Article non trouvé.\"}").build();
 
+        if (article.getStock() < vendreDTO.getQuantite())
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"message\": \"Stock insuffisant.\"}").build();
+        article.setStock(article.getStock() - vendreDTO.getQuantite());
+
         VendreEntity vente = new VendreEntity();
-        vente.setTicketEntity(ticket);
+        vente.setTicket(ticket);
         vente.setArticle(article);
         vente.setQuantite(vendreDTO.getQuantite());
         vente.setPrixVente(vendreDTO.getPrixVente());
 
         vendreRepository.persist(vente);
+        articleRepository.persist(article);
         return Response.status(Response.Status.CREATED).entity(new VendreDTO(vente)).build();
     }
 
@@ -134,10 +141,6 @@ public class TicketResources {
         long deletedCount = vendreRepository.delete("ticketEntity.id.annee = ?1 and ticketEntity.id.numeroTicket = ?2 and article.id = ?3", annee, numeroTicket, articleId);
         if (deletedCount > 0)
             return Response.noContent().build();
-        else
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Vente non trouvée.\"}").build();
+        return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Vente non trouvée.\"}").build();
     }
-
-
-
 }

@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +24,7 @@ public class ArticleDTO {
     @Size(max = 60)
     @NotNull
     @JsonProperty(index = 2)
-    private String nom;
+    private String nomArticle;
 
     @NotNull
     @JsonProperty(index = 3)
@@ -39,15 +38,15 @@ public class ArticleDTO {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 6)
-    private String marque;
+    private String nomMarque;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 7)
-    private String couleur;
+    private String nomCouleur;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 8)
-    private String typeBiere;
+    private String nomTypeBiere;
 
     @JsonProperty(index = 9)
     private Integer stock;
@@ -58,14 +57,14 @@ public class ArticleDTO {
 
     public ArticleDTO(ArticleEntity articleEntity, boolean includeVentes) {
         this.id = articleEntity.getId();
-        this.nom = articleEntity.getNomArticle();
+        this.nomArticle = articleEntity.getNomArticle();
         this.prixAchat = articleEntity.getPrixAchat();
         this.volume = articleEntity.getVolume();
         this.titrage = articleEntity.getTitrage();
         this.stock = articleEntity.getStock();
-        this.marque = articleEntity.getMarque() != null ? articleEntity.getMarque().getNomMarque() : null;
-        this.couleur = articleEntity.getCouleur() != null ? articleEntity.getCouleur().getNomCouleur() : null;
-        this.typeBiere = articleEntity.getTypeBiere() != null ? articleEntity.getTypeBiere().getNomType() : null;
+        this.nomMarque = articleEntity.getMarque() != null ? articleEntity.getMarque().getNomMarque() : null;
+        this.nomCouleur = articleEntity.getCouleur() != null ? articleEntity.getCouleur().getNomCouleur() : null;
+        this.nomTypeBiere = articleEntity.getTypeBiere() != null ? articleEntity.getTypeBiere().getNomTypeBiere() : null;
         this.ventes = includeVentes ? VendreDTO.toDTOList(articleEntity.getVentes()) : null;
     }
 

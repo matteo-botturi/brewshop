@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,15 +24,15 @@ public class MarqueDTO {
     @Size(max = 40)
     @NotNull
     @JsonProperty(index = 2)
-    private String nom;
+    private String nomMarque;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 3)
-    private String pays;
+    private String nomPays;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 4)
-    private String fabricant;
+    private String nomFabricant;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(index = 5)
@@ -45,9 +44,9 @@ public class MarqueDTO {
     */
     public MarqueDTO(MarqueEntity marqueEntity, boolean includeArticles/*, URI baseUri*/) {
         this.id = marqueEntity.getId();
-        this.nom = marqueEntity.getNomMarque();
-        this.pays = marqueEntity.getPays() != null ? marqueEntity.getPays().getNomPays() : null;
-        this.fabricant = marqueEntity.getFabricant() != null ? marqueEntity.getFabricant().getNomFabricant() : null;
+        this.nomMarque = marqueEntity.getNomMarque();
+        this.nomPays = marqueEntity.getPays() != null ? marqueEntity.getPays().getNomPays() : null;
+        this.nomFabricant = marqueEntity.getFabricant() != null ? marqueEntity.getFabricant().getNomFabricant() : null;
         this.articles = includeArticles ? createListArticles(marqueEntity.getArticles()) : null;
         //this.uri = (baseUri != null) ? baseUri.resolve("continents/" + id) : null;
     }

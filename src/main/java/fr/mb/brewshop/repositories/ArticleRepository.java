@@ -4,7 +4,6 @@ import fr.mb.brewshop.entities.ArticleEntity;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.RequestScoped;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +42,6 @@ public class ArticleRepository implements PanacheRepositoryBase<ArticleEntity, I
             query += " and lower(typeBiere.nomType) like lower(:nomTypeBiere)";
             params.put("nomTypeBiere", "%" + nomTypeBiere + "%");
         }
-
         return find(query, params);
     }
 }

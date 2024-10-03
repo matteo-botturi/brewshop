@@ -3,7 +3,6 @@ package fr.mb.brewshop.repositories;
 import fr.mb.brewshop.entities.PaysEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.RequestScoped;
-
 import java.util.Optional;
 
 @RequestScoped

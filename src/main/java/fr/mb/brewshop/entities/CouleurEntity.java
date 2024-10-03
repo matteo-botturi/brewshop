@@ -30,6 +30,7 @@ public class CouleurEntity {
     @OneToMany(mappedBy = "couleur")
     private List<ArticleEntity> articles;
 
+    //Only for DataInitializer
     public CouleurEntity(String nomCouleur) {
         this.nomCouleur = nomCouleur;
     }

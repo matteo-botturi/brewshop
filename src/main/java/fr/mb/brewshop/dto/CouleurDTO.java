@@ -25,11 +25,11 @@ public class CouleurDTO {
     @NotNull
     @JsonView(Views.Public.class)
     @JsonProperty(index = 2)
-    private String nom;
+    private String nomCouleur;
 
     public CouleurDTO(CouleurEntity couleurEntity){
         id = couleurEntity.getId();
-        nom = couleurEntity.getNomCouleur();
+        nomCouleur = couleurEntity.getNomCouleur();
     }
 
     public static List<CouleurDTO> toDTOList(List<CouleurEntity> couleurEntities) {

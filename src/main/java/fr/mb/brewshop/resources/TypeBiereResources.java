@@ -1,14 +1,10 @@
 package fr.mb.brewshop.resources;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import fr.mb.brewshop.dto.ArticleDTO;
 import fr.mb.brewshop.dto.CouleurDTO;
 import fr.mb.brewshop.dto.TypeBiereDTO;
-import fr.mb.brewshop.entities.ArticleEntity;
-import fr.mb.brewshop.entities.CouleurEntity;
 import fr.mb.brewshop.entities.TypeBiereEntity;
 import fr.mb.brewshop.outils.StringFormatterService;
-import fr.mb.brewshop.repositories.ArticleRepository;
 import fr.mb.brewshop.repositories.TypeBiereRepository;
 import fr.mb.brewshop.views.Views;
 import jakarta.inject.Inject;
@@ -29,9 +25,6 @@ public class TypeBiereResources {
 
     @Inject
     TypeBiereRepository typeBiereRepository;
-
-    @Inject
-    ArticleRepository articleRepository;
 
     @GET
     @Operation(summary = "Obtenir tous les types", description = "Récupérer la liste de tous les types")
@@ -54,20 +47,6 @@ public class TypeBiereResources {
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
-    @GET
-    @Path("/{id}/articles")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Obtenir tous les articles d'un type de bière", description = "Récupérer la liste de tous les articles d'un type de bière spécifique")
-    @APIResponse(responseCode = "200", description = "Liste des articles récupérée avec succès")
-    public Response getArticlesByTypeBiere(@PathParam("id") Integer typeBiereId) {
-        List<ArticleEntity> articles = articleRepository.find("typeBiere.id", typeBiereId).list();
-        if (articles.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Aucun article trouvé pour ce type de bière.\"}").build();
-        }
-        return Response.ok(ArticleDTO.toDTOList(articles, false)).build();
-    }
-
-
     @Transactional
     @POST
     @APIResponse(responseCode = "201", description = "La ressource a été créée.")
@@ -76,7 +55,7 @@ public class TypeBiereResources {
     @APIResponse(responseCode = "500", description = "Le serveur a rencontré un problème.")
     @JsonView(Views.Public.class)
     public Response create(@Valid @JsonView(Views.Public.class) TypeBiereDTO typeBiere, @Context UriInfo uriInfo) {
-        String formattedNomTypeBiere = StringFormatterService.singleWord(typeBiere.getNom());
+        String formattedNomTypeBiere = StringFormatterService.formatOthersName(typeBiere.getNomTypeBiere());
 
         boolean exists = typeBiereRepository.find("nomType", formattedNomTypeBiere).firstResultOptional().isPresent();
         if (exists) {
@@ -88,7 +67,7 @@ public class TypeBiereResources {
         }
 
         TypeBiereEntity typeBiereEntity = new TypeBiereEntity();
-        typeBiereEntity.setNomType(formattedNomTypeBiere);
+        typeBiereEntity.setNomTypeBiere(formattedNomTypeBiere);
         typeBiereRepository.persist(typeBiereEntity);
 
         UriBuilder uriBuilder = uriInfo.getRequestUriBuilder();
@@ -103,10 +82,10 @@ public class TypeBiereResources {
     @APIResponse(responseCode = "404", description = "Type non trouvé.")
     @Transactional
     @JsonView(Views.Public.class)
-    public Response updateById(@PathParam("id") Integer id, @Valid @JsonView(Views.Public.class) CouleurDTO couleurDTO) {
+    public Response update(@PathParam("id") Integer id, @Valid @JsonView(Views.Public.class) TypeBiereDTO typeBiereDTO) {
         return typeBiereRepository.findByIdOptional(id).map(typeBiere -> {
-            String formattedNewTypeName = StringFormatterService.singleWord(couleurDTO.getNom());
-            typeBiere.setNomType(formattedNewTypeName);
+            String formattedNewTypeName = StringFormatterService.formatOthersName(typeBiereDTO.getNomTypeBiere());
+            typeBiere.setNomTypeBiere(formattedNewTypeName);
             return Response.ok(new TypeBiereDTO(typeBiere)).build();
         }).orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
@@ -116,7 +95,7 @@ public class TypeBiereResources {
     @APIResponse(responseCode = "404", description = "Type non trouvé.")
     @Path("{id}")
     @Transactional
-    public Response deleteById(@PathParam("id") Integer id){
+    public Response delete(@PathParam("id") Integer id){
         if (typeBiereRepository.deleteById(id))
             return Response.noContent().build();
         return Response.status(Response.Status.NOT_FOUND).build();

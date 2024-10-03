@@ -1,11 +1,8 @@
 package fr.mb.brewshop.resources;
 
-import fr.mb.brewshop.dto.ContinentDTO;
 import fr.mb.brewshop.dto.FabricantDTO;
-import fr.mb.brewshop.entities.ContinentEntity;
 import fr.mb.brewshop.entities.FabricantEntity;
 import fr.mb.brewshop.entities.MarqueEntity;
-import fr.mb.brewshop.entities.PaysEntity;
 import fr.mb.brewshop.outils.StringFormatterService;
 import fr.mb.brewshop.repositories.FabricantRepository;
 import fr.mb.brewshop.repositories.MarqueRepository;
@@ -18,12 +15,13 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.net.URI;
 import java.util.List;
 
 @Path("/fabricants")
+@Tag(name = "Fabricant", description = "Operations liées aux Fabricants")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class FabricantResources {
 
     @Inject
@@ -73,14 +71,14 @@ public class FabricantResources {
         FabricantEntity fabricantEntity = fabricantRepository.findById(id);
         if (fabricantEntity == null) return Response.status(Response.Status.NOT_FOUND).build();
 
-        String formattedNomMarque = StringFormatterService.formatCountryName(nomMarque);
+        String formattedNomMarque = StringFormatterService.formatOthersName(nomMarque);
 
         boolean marqueExists = fabricantEntity.getMarques().stream()
-                .anyMatch(fabricant ->
-                        StringFormatterService.formatOthersName(fabricant.getNomMarque())
+                .anyMatch(marque ->
+                        StringFormatterService.formatOthersName(marque.getNomMarque())
                                 .equalsIgnoreCase(formattedNomMarque));
         if (marqueExists) {
-            String errorMessage = "{\"message\": \"Le pays '" + formattedNomMarque + "' existe déjà pour ce fabricant.\"}";
+            String errorMessage = "{\"message\": \"La marque '" + formattedNomMarque + "' existe déjà pour ce fabricant.\"}";
             return Response.status(Response.Status.CONFLICT)
                     .entity(errorMessage)
                     .type(MediaType.APPLICATION_JSON)
@@ -99,5 +97,22 @@ public class FabricantResources {
 
         //return Response.ok(fabricantDTO).build();
         return Response.created(countryUri).entity(fabricantDTO).build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Modifier le nom d'un fabricant", description = "Mettre à jour uniquement le nom d'un fabricant existant")
+    @APIResponse(responseCode = "200", description = "Fabricant mis à jour avec succès")
+    @APIResponse(responseCode = "404", description = "Fabricant non trouvé")
+    @Transactional
+    public Response update(@PathParam("id") Integer id, String nomFabricant) {
+        FabricantEntity fabricantEntity = fabricantRepository.findById(id);
+        if (fabricantEntity == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\": \"Fabricant non trouvé.\"}").build();
+        fabricantEntity.setNomFabricant(StringFormatterService.formatOthersName(nomFabricant));
+        fabricantRepository.persist(fabricantEntity);
+        return Response.ok("{\"message\": \"Fabricant mis à jour avec succès.\"}").build();
     }
 }

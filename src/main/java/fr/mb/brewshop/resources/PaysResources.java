@@ -1,11 +1,9 @@
 package fr.mb.brewshop.resources;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import fr.mb.brewshop.dto.PaysDTO;
 import fr.mb.brewshop.entities.PaysEntity;
 import fr.mb.brewshop.outils.StringFormatterService;
 import fr.mb.brewshop.repositories.PaysRepository;
-import fr.mb.brewshop.views.Views;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -50,7 +48,7 @@ public class PaysResources {
     @APIResponse(responseCode = "200", description = "Pays mis à jour avec succès")
     @APIResponse(responseCode = "404", description = "Pays non trouvé")
     @Transactional
-    public Response updatePays(@PathParam("id") Integer id, String nomPays) {
+    public Response update(@PathParam("id") Integer id, String nomPays) {
         PaysEntity pays = paysRepository.findById(id);
         if (pays == null)
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -65,11 +63,9 @@ public class PaysResources {
     @APIResponse(responseCode = "204", description = "Pays supprimé avec succès")
     @APIResponse(responseCode = "404", description = "Pays non trouvé")
     @Transactional
-    public Response deletePays(@PathParam("id") Integer id) {
-        boolean deleted = paysRepository.deleteById(id);
-        if (deleted)
+    public Response delete(@PathParam("id") Integer id) {
+        if (paysRepository.deleteById(id))
             return Response.noContent().build();
-        else
-            return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 }

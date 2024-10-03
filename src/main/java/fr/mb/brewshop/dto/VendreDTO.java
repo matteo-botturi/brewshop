@@ -2,7 +2,6 @@ package fr.mb.brewshop.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.mb.brewshop.entities.VendreEntity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class VendreDTO {
 
     @JsonProperty(index = 1)
@@ -45,4 +43,3 @@ public class VendreDTO {
                 .collect(Collectors.toList());
     }
 }
-
