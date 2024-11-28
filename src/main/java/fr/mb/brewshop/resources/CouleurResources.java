@@ -48,6 +48,7 @@ public class CouleurResources {
 
     @Transactional
     @POST
+    @Operation(summary = "Créer une nouvelle couleur", description = "Ajouter une nouvelle couleur.")
     @APIResponse(responseCode = "201", description = "La ressource a été créée.")
     @APIResponse(responseCode = "400", description = "Nom de couleur invalide.")
     @APIResponse(responseCode = "409", description = "La couleur existe déjà.")
@@ -76,6 +77,7 @@ public class CouleurResources {
 
     @PUT
     @Path("{id}")
+    @Operation(summary = "Modifier le nom d'une couleur", description = "Mettre à jour uniquement le nom d'une couleur existant.")
     @APIResponse(responseCode = "200", description = "La couleur a été mise à jour avec succès.")
     @APIResponse(responseCode = "400", description = "Nom de couleur invalide.")
     @APIResponse(responseCode = "404", description = "Couleur non trouvée.")
@@ -90,6 +92,7 @@ public class CouleurResources {
     }
 
     @DELETE
+    @Operation(summary = "Supprimer une couleur", description = "Supprimer une couleur par son ID.")
     @APIResponse(responseCode = "204", description = "La couleur a été supprimée avec succès.")
     @APIResponse(responseCode = "404", description = "Couleur non trouvée.")
     @Path("{id}")

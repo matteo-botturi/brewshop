@@ -1,8 +1,7 @@
-# Brewshop - Projet de Gestion de Ventes de Bières
-
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
-
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+<div align="center">
+  <h1>Brewshop - Projet de Gestion de Ventes de Bières</h1>
+  <img src="images/logo.jpg" alt="Brewshop logo" width="500"/>
+</div>
 
 ## Description
 
@@ -11,6 +10,20 @@ Ce projet est une API RESTful développée avec **Quarkus**, permettant de gére
 L'API offre des fonctionnalités de **CRUD** (Création, Lecture, Mise à jour, Suppression) pour chacune de ces entités, ainsi que la gestion des relations complexes entre elles, comme la relation entre les articles et les tickets de vente via la table associative `VENDRE`.
 
 Le projet inclut également une gestion du **stock** pour chaque article, qui est mis à jour automatiquement à chaque vente.
+
+## Aperçu Visuel
+
+### 1. Endpoints liés à la ressource Ticket
+<img src="images/1.jpg" alt="Endpoints Swagger - Ticket" width="500"/>
+
+### 2. Inclusion conditionnelle d'informations supplémentaires via un booléen
+<img src="images/2.jpg" alt="Inclusion conditionnelle - Boolean" width="500"/>
+
+### 3. Exemple de résultat d'un GET
+<img src="images/3.jpg" alt="Résultat d'une requête GET" width="500"/>
+
+### 4. Documentation OpenAPI
+<img src="images/4.jpg" alt="Documentation OpenAPI" width="500"/>
 
 ## Fonctionnalités Principales
 
@@ -35,9 +48,13 @@ Le projet inclut également une gestion du **stock** pour chaque article, qui es
 Modifier les paramètres de connexion à la base de données dans le fichier application.properties :
 
 quarkus.datasource.db-kind=mssql
+
 quarkus.datasource.username=votre-utilisateur
+
 quarkus.datasource.password=votre-mot-de-passe
+
 quarkus.datasource.jdbc.url=jdbc:sqlserver://localhost:1433;databaseName=db-name
+
 
 **Running the application in dev mode**
 
@@ -136,19 +153,3 @@ Voici quelques fonctionnalités et améliorations prévues qui seront ajoutées 
   for Hibernate ORM via the active record or the repository pattern
 - RESTEasy Classic ([guide](https://quarkus.io/guides/resteasy)): REST endpoint framework implementing Jakarta REST and
   more
-
-## Provided Code
-
-### Hibernate ORM
-
-Create your first JPA entity
-
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
-
-[Related Hibernate with Panache section...](https://quarkus.io/guides/hibernate-orm-panache)
-
-### RESTEasy JAX-RS
-
-Easily start your RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)

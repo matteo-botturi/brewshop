@@ -34,6 +34,8 @@ public class FabricantResources {
     private UriInfo uriInfo;
 
     @GET
+    @Operation(summary = "Obtenir tous les fabricants", description = "Récupérer la liste de tous les fabricants")
+    @APIResponse(responseCode = "200", description = "Liste des fabricants récupérée avec succès")
     public Response getAll() {
         List<FabricantEntity> fabricants = fabricantRepository.listAll();
         return Response.ok(FabricantDTO.toDtoList(fabricants)).build();

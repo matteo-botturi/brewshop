@@ -1,7 +1,6 @@
 package fr.mb.brewshop.resources;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import fr.mb.brewshop.dto.CouleurDTO;
 import fr.mb.brewshop.dto.TypeBiereDTO;
 import fr.mb.brewshop.entities.TypeBiereEntity;
 import fr.mb.brewshop.outils.StringFormatterService;
@@ -49,6 +48,7 @@ public class TypeBiereResources {
 
     @Transactional
     @POST
+    @Operation(summary = "Créer une nouveau type", description = "Ajouter un nouveau type.")
     @APIResponse(responseCode = "201", description = "La ressource a été créée.")
     @APIResponse(responseCode = "400", description = "Nom du type invalide.")
     @APIResponse(responseCode = "409", description = "Le type existe déjà.")
@@ -77,6 +77,7 @@ public class TypeBiereResources {
 
     @PUT
     @Path("{id}")
+    @Operation(summary = "Modifier le nom d'un type", description = "Mettre à jour uniquement le nom d'un type existant.")
     @APIResponse(responseCode = "200", description = "Le type a été mise à jour avec succès.")
     @APIResponse(responseCode = "400", description = "Nom du type invalide.")
     @APIResponse(responseCode = "404", description = "Type non trouvé.")
@@ -91,6 +92,7 @@ public class TypeBiereResources {
     }
 
     @DELETE
+    @Operation(summary = "Supprimer un type", description = "Supprimer un type par son ID.")
     @APIResponse(responseCode = "204", description = "Le type a été supprimé avec succès.")
     @APIResponse(responseCode = "404", description = "Type non trouvé.")
     @Path("{id}")

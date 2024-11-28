@@ -5,7 +5,6 @@ import fr.mb.brewshop.entities.FabricantEntity;
 import fr.mb.brewshop.entities.MarqueEntity;
 import fr.mb.brewshop.entities.PaysEntity;
 import fr.mb.brewshop.outils.StringFormatterService;
-import fr.mb.brewshop.repositories.ArticleRepository;
 import fr.mb.brewshop.repositories.FabricantRepository;
 import fr.mb.brewshop.repositories.MarqueRepository;
 import fr.mb.brewshop.repositories.PaysRepository;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Path("/marques")
-@Tag(name = "Couleur", description = "Opérations liées aux marques")
+@Tag(name = "Marque", description = "Opérations liées aux marques")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MarqueResources {
